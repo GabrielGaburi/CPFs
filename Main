@@ -1,0 +1,108 @@
+import random
+
+
+def calcular_digito_verificador(cpf):
+    soma = sum(cpf[i] * (10 - i) for i in range(9))
+    resto = soma % 11
+    digito1 = 0 if resto < 2 else 11 - resto
+
+    cpf.append(digito1)
+
+    soma = sum(cpf[i] * (11 - i) for i in range(10))
+    resto = soma % 11
+    digito2 = 0 if resto < 2 else 11 - resto
+
+    cpf.append(digito2)
+
+    return cpf
+
+
+def validar_digitos_verificadores(cpf):
+    cpf_numeros = [int(digito) for digito in cpf[:9]]
+
+    soma = sum(cpf_numeros[i] * (10 - i) for i in range(9))
+    resto = soma % 11
+    digito1 = 0 if resto < 2 else 11 - resto
+
+    cpf_numeros.append(digito1)
+
+    soma = sum(cpf_numeros[i] * (11 - i) for i in range(10))
+    resto = soma % 11
+    digito2 = 0 if resto < 2 else 11 - resto
+
+    return cpf[-2:] == str(digito1) + str(digito2)  # Correção aqui
+
+
+def verificar_sequencia(cpf):
+
+    if cpf == cpf[0] * len(cpf):
+        return True
+
+    if cpf == sorted(cpf):
+        return True
+
+    if cpf == sorted(cpf, reverse=True):
+        return True
+
+    return False
+
+
+def gerar_cpf():
+    while True:
+
+        cpf = [random.randint(0, 9) for _ in range(9)]
+
+        cpf_str = ''.join(map(str, cpf))
+
+        if not verificar_sequencia(cpf_str):
+            break
+
+    cpf = calcular_digito_verificador(cpf)
+
+    cpf_formatado = f"{cpf[0]}{cpf[1]}{cpf[2]}.{cpf[3]}{cpf[4]}{cpf[5]}.{cpf[6]}{cpf[7]}{cpf[8]}-{cpf[9]}{cpf[10]}"
+    return cpf_formatado
+
+
+def numeroCpf():
+    while True:
+        cpf = input("Digite o número do CPF: ")
+
+        if len(cpf) == 11 and cpf.isdigit():
+            if verificar_sequencia(cpf):
+                print("CPF inválido. Números sequenciais não são permitidos.")
+            elif validar_digitos_verificadores(cpf):
+                print("CPF válido para processamento.")
+                cpf_formatado = f"{cpf[:3]}.{cpf[3:6]}.{cpf[6:9]}-{cpf[9:]}"
+                print(f"CPF formatado: {cpf_formatado}")
+                return cpf
+            else:
+                print("CPF inválido. Dígitos verificadores incorretos.")
+        else:
+            print("CPF inválido. Digite exatamente 11 números.")
+
+        opcao = input("Deseja tentar novamente? (s para sim, qualquer outra tecla para sair): ")
+        if opcao.lower() != 's':
+            print("Saindo...")
+            break
+
+def menu():
+    while True:
+        print("\n--- Menu ---")
+        print("1. Validar CPF")
+        print("2. Gerar CPF")
+        print("3. Sair")
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1":
+            numeroCpf()
+        elif opcao == "2":
+            cpf_gerado = gerar_cpf()
+            print(f"CPF gerado: {cpf_gerado}")
+        elif opcao == "3":
+            print("Saindo...")
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+
+menu()
